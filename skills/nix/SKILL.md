@@ -9,3 +9,8 @@ description: Expert Nix development assistance. Use when working with Nix code, 
 
 - Use **flake-parts** when creating new flakes
 - Format with **nixpkgs-fmt** after changes
+- Use **writeShellApplication** for shell scripts (not writeShellScriptBin)
+  - Automatically runs ShellCheck validation
+  - Sets strict bash options (`set -euo pipefail`)
+  - Fix ALL ShellCheck warnings without ignoring them
+  - Add **meta.description**
