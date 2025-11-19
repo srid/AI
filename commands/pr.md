@@ -12,11 +12,10 @@ Create and open a draft pull request on GitHub for the current branch.
 
 2. **Generate PR Content**
    - Create a descriptive title that summarizes the changes
-   - Generate a comprehensive description with:
-     - A brief summary paragraph at the top
-     - **User-Facing Changes**: What end-users will notice or experience
-     - **Developer Notes**: Technical details, implementation notes, or items of interest to other developers
-   - Keep the description concise but informative
+   - Write a concise description that explains WHAT changed and WHY from a high-level perspective
+   - Focus on user-facing changes and behavior, not implementation details
+   - Use natural language without overly structured sections
+   - Keep it brief - a few sentences to a short paragraph is usually enough
 
 3. **Get User Confirmation**
    - Present the proposed PR title and description to the user
@@ -39,23 +38,10 @@ Create and open a draft pull request on GitHub for the current branch.
 ## Example Output Format
 
 ```markdown
-PR Title: Add new authentication system
+PR Title: Add OAuth authentication
 
 PR Description:
-This PR introduces a modern OAuth-based authentication system alongside improved password management, enhancing both security and user experience.
-
-## User-Facing Changes
-
-- Users can now log in using OAuth providers (Google, GitHub)
-- Improved password reset flow with better email notifications
-- Session timeout increased from 1 hour to 24 hours
-
-## Developer Notes
-
-- Implemented OAuth2 client using the `oauth2-client` library
-- Added new `AuthService` class to handle authentication logic
-- Updated database schema with new `oauth_tokens` table
-- Added comprehensive unit tests for authentication flows
+Adds OAuth login support for Google and GitHub. Users can now authenticate using their existing accounts from these providers. The password reset flow has also been improved with clearer email notifications.
 ```
 
 ## Notes
