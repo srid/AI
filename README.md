@@ -9,7 +9,7 @@
 Add as flake input:
 
 > [!TIP]
-> You may instead want to use [git submodules for faster iteration](https://nixos.asia/en/blog/git-submodule-input).
+> Since my configuration is in this very repo, I use [git submodules for faster iteration](https://nixos.asia/en/blog/git-submodule-input).
 
 ```nix
 {
