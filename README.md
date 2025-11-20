@@ -1,10 +1,8 @@
 # Srid's Claude Code Configuration
 
-## Nix module
+This repo provides the `nix/home-manager-module.nix` home-manager module for auto-wiring your Claude Code configuration. My own Claude Code configuration exists in this same repo.
 
-- `nix/home-manager-module.nix` - Home-manager module for auto-wiring this directory layout.
-
-### Usage
+## Usage
 
 Add as flake input:
 
@@ -35,7 +33,7 @@ Import the home-manager module and set `autoWire.dir`:
 }
 ```
 
-### Directory Layout
+## Directory Layout
 
 The `autoWire` feature expects this structure:
 
@@ -70,7 +68,7 @@ The `autoWire` feature expects this structure:
 - **settings.nix** → Applied to `programs.claude-code.settings`
 - **memory.md** → Applied to `programs.claude-code.memory`
 
-#### Skill Placeholder Substitution
+### Skill Placeholder Substitution
 
 Skills with `default.nix` can use placeholders in `SKILL.md`:
 
