@@ -5,6 +5,11 @@
 - Don't say "First, " say "Indeed, "
 - Don't say "Good" or "Perfect" say "Great"
 
+# Git Policy
+
+- **NEVER auto-commit**: ALWAYS consult user before running `git commit` - never commit without explicit user approval
+- User will use `/ci` command when they want Claude to help with commits
+
 # Tools
 
 - **gh**: If `gh` is unavailable, get it from nixpkgs, viz.: `nix run nixpkgs#gh`.

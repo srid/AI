@@ -28,6 +28,7 @@ Stage all changes, generate a commit message, and commit after user approval.
 
 ## Important Constraints
 
+- **NEVER auto-commit**: ALWAYS ask user for approval before running `git commit` - NEVER commit without explicit user confirmation
 - **Single commit only**: This command creates exactly ONE new commit on top of the current branch
 - **No history rewriting**: Never use `--amend`, `--fixup`, rebase, or reset operations
 - **No pushing**: Never run `git push` - commit stays local only
