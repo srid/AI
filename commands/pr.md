@@ -2,6 +2,13 @@
 
 Create and open a draft pull request on GitHub for the current branch.
 
+## Usage
+
+```
+/pr           # Normal mode - prompts for confirmation
+/pr yes       # Auto mode - creates PR without prompting
+```
+
 ## Workflow
 
 1. **Gather Information**
@@ -17,13 +24,14 @@ Create and open a draft pull request on GitHub for the current branch.
    - Use natural language without overly structured sections
    - Keep it brief - a few sentences to a short paragraph is usually enough
 
-3. **Get User Confirmation**
+3. **Get User Confirmation** (skip if 'yes' argument provided)
    - Present the proposed PR title and description to the user
    - Ask for confirmation or request modifications
    - Allow the user to edit the title or description before proceeding
+   - **If 'yes' argument was provided**: Skip this step entirely and proceed directly to create PR
 
 4. **Create Draft PR**
-   - Once confirmed, use the `gh` CLI to create a draft PR:
+   - Once confirmed (or if 'yes' argument provided), use the `gh` CLI to create a draft PR:
      ```bash
      gh pr create --draft --title "TITLE" --body "DESCRIPTION"
      ```
@@ -37,11 +45,25 @@ Create and open a draft pull request on GitHub for the current branch.
 
 ## Example Output Format
 
+### Normal Mode (`/pr`)
 ```markdown
 PR Title: Add OAuth authentication
 
 PR Description:
 Adds OAuth login support for Google and GitHub. Users can now authenticate using their existing accounts from these providers. The password reset flow has also been improved with clearer email notifications.
+
+Do you approve this PR? (yes/no/edit)
+```
+
+### Auto Mode (`/pr yes`)
+```markdown
+PR Title: Add OAuth authentication
+
+PR Description:
+Adds OAuth login support for Google and GitHub. Users can now authenticate using their existing accounts from these providers. The password reset flow has also been improved with clearer email notifications.
+
+Creating draft PR...
+https://github.com/user/repo/pull/123
 ```
 
 ## Notes

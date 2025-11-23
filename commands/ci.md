@@ -2,6 +2,13 @@
 
 Stage all changes, generate a commit message, and commit after user approval.
 
+## Usage
+
+```
+/ci           # Normal mode - prompts for approval
+/ci yes       # Auto mode - commits without prompting
+```
+
 ## Workflow
 
 1. **Stage All Changes**
@@ -16,19 +23,20 @@ Stage all changes, generate a commit message, and commit after user approval.
      - Uses imperative mood (e.g., "Add feature" not "Added feature")
      - Follows conventional commit style if appropriate
 
-3. **Present to User for Approval**
+3. **Present to User for Approval** (skip if 'yes' argument provided)
    - Display the generated commit message
    - Show the `git status` output of what will be committed
    - Ask the user to confirm or modify the commit message
    - Allow the user to edit the message before proceeding
+   - **If 'yes' argument was provided**: Skip this step entirely and proceed directly to commit
 
 4. **Commit Changes**
-   - Once approved, run `git commit -m "MESSAGE"` (or `git commit -F -` with multi-line message)
+   - Once approved (or if 'yes' argument provided), run `git commit -m "MESSAGE"` (or `git commit -F -` with multi-line message)
    - Report the commit hash and summary to the user
 
 ## Important Constraints
 
-- **NEVER auto-commit**: ALWAYS ask user for approval before running `git commit` - NEVER commit without explicit user confirmation
+- **NEVER auto-commit**: ALWAYS ask user for approval before running `git commit` - NEVER commit without explicit user confirmation (UNLESS the 'yes' argument is provided)
 - **Single commit only**: This command creates exactly ONE new commit on top of the current branch
 - **No history rewriting**: Never use `--amend`, `--fixup`, rebase, or reset operations
 - **No pushing**: Never run `git push` - commit stays local only
@@ -41,6 +49,7 @@ Stage all changes, generate a commit message, and commit after user approval.
 
 ## Example Output Format
 
+### Normal Mode (`/ci`)
 ```markdown
 Staged changes:
 M  src/app.ts
@@ -54,6 +63,23 @@ Removes deprecated old-file.js and introduces new helper functions
 for data validation. Updates app.ts to use the new utilities.
 
 Do you approve this commit message? (yes/no/edit)
+```
+
+### Auto Mode (`/ci yes`)
+```markdown
+Staged changes:
+M  src/app.ts
+A  src/utils/helper.ts
+D  old-file.js
+
+Generated commit message:
+Add helper utilities and refactor app
+
+Removes deprecated old-file.js and introduces new helper functions
+for data validation. Updates app.ts to use the new utilities.
+
+Creating commit...
+[master abc1234] Add helper utilities and refactor app
 ```
 
 ## Notes
