@@ -42,6 +42,9 @@ let
       in
       pkgs.runCommand "${skillName}-skill" { } ''
         mkdir -p $out
+        cp -r ${skillPath}/* $out/
+        rm $out/default.nix
+        chmod +w $out/SKILL.md
         substitute ${skillPath}/SKILL.md $out/SKILL.md \
           --replace-fail '@${skillName}@' '${skillPkg}/bin/${skillName}'
       ''
