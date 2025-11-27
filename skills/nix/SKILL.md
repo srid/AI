@@ -15,6 +15,14 @@ description: Expert Nix development assistance. Use when working with Nix code, 
   - Fix ALL ShellCheck warnings without ignoring them
   - Add **meta.description**
 
+## Building with Nix
+
+When running `nix build`:
+- **ALWAYS** use `--print-out-paths` flag so final build path is printed
+- **NEVER** run with timeout - allow command to finish completely
+- If command doesn't finish OR final out path is not shown, consider it **FAILED**
+- On failure, investigate logs without hallucinating - look at actual error messages
+
 ## Home-Manager Module
 
 When adding a home-manager module to a project:
