@@ -42,7 +42,9 @@ Every error case in generated code must be handled properly.
 - Prefer `Text` over `String`
 - Use `newtype` wrappers for domain types
 - Apply smart constructors for validation
-- Use RecordDotSyntax (`value.field`) instead of manually unpacking data types
+- Records:
+    - Use RecordDotSyntax & OverloadedRecordDot (add pragma to modules that use the syntax)
+    - Use DisambiguateRecordFields and DuplicateRecordFields for simple field names (add pragma to modules that use the syntax)
 - Use lenses for record manipulation when appropriate
 - Use `Applicative` and `Monad` appropriately
 - Avoid trivial `let` bindings when inlining keeps code simple and readable
