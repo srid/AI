@@ -47,6 +47,11 @@ Every error case in generated code must be handled properly.
 - Use `Applicative` and `Monad` appropriately
 - Avoid trivial `let` bindings when inlining keeps code simple and readable
 
+**Working with Aeson**:
+- NEVER construct aeson objects by hand
+- Instead create a type and use `encode` and `decode` on it
+- These types should generally use generic deriving of aeson (no hand deriving)
+
 
 ## Relude Best Practices
 
