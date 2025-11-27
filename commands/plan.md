@@ -21,11 +21,15 @@ Create a detailed implementation plan for a feature, fix, or change. The plan is
    - Create `.plan/` directory if it doesn't exist
    - Write plan to `.plan/<slug>.md` with:
      - **Overview**: High-level description of what needs to be done and why
-     - **Phases**: Sequential phases of implementation, each with:
-       - Phase number and name
-       - Specific tasks/steps within that phase
-       - Expected outcomes
-       - Any dependencies or prerequisites
+     - **Phases**: Determine number of phases based on complexity:
+       - Each phase must be self-contained and easily implementable by Claude
+       - Each phase must be easily reviewable by user before next phase
+       - If task is trivial, use single phase or omit phases section entirely
+       - For each phase include:
+         - Phase number and name
+         - Specific tasks/steps within that phase
+         - Expected outcomes
+         - Any dependencies or prerequisites
    - **STOP after creating the plan file. Tell user the plan is ready for review.**
 
 ### 2. **Plan Review Cycle**
@@ -111,7 +115,9 @@ Claude: [Proceeds with Phase 1 implementation...]
 ## Notes
 
 - Plan files are iterative - expect multiple review cycles
+- Number of phases depends on task complexity - trivial tasks may have one or no phases
 - Keep phases sequential and logical
+- Each phase should be self-contained, easily implementable, and easily reviewable
 - Each phase should have clear entry and exit criteria
 - Remove `ME: ` comments only after addressing them in the plan
 - The plan file is the source of truth for implementation
