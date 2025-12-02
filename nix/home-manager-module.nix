@@ -96,7 +96,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable && cfg.autoWire.dir != null && cfg.autoWire.enable) {
+  config = lib.mkIf (cfg.autoWire.dir != null && cfg.autoWire.enable) {
     # Link skill directories to ~/.claude/skills/
     home.file = lib.mapAttrs'
       (skillName: _:
