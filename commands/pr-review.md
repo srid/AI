@@ -24,25 +24,28 @@ Fetch and resolve review comments from a GitHub pull request by implementing the
 
    Use `gh api` to fetch:
    ```bash
+   # Get PR review threads (includes is_resolved field)
+   gh api repos/OWNER/REPO/pulls/NUMBER/threads
+   
    # Get PR reviews (contains review state: CHANGES_REQUESTED, APPROVED, etc.)
    gh api repos/OWNER/REPO/pulls/NUMBER/reviews
-   
-   # Get review comments (comments on specific lines of code)
-   gh api repos/OWNER/REPO/pulls/NUMBER/comments
    ```
-
-   The review comments API returns:
+   
+   **IMPORTANT: Filter out resolved threads. Only process threads where `is_resolved` is false.**
+   
+   The threads API returns:
+   - `is_resolved`: Whether the thread has been marked as resolved
    - `path`: File being commented on
-   - `line` or `original_line`: Line number
-   - `body`: Comment text
-   - `user.login`: Author
-   - `in_reply_to_id`: If this is a reply (null for top-level comments)
+   - `line`: Line number
+   - `comments`: Array of comments in the thread
+     - `body`: Comment text
+     - `user.login`: Author
    - `pull_request_review_id`: Links to the review
 
 ### 3. **Filter and Present Comments**
 
-   - Filter to show only top-level comments (where `in_reply_to_id` is null)
-   - Group comments by file for clarity
+   - **Filter out resolved threads** - only process threads where `is_resolved` is false
+   - Group threads by file for clarity
    - Check review states - prioritize comments from reviews with `CHANGES_REQUESTED` state
    - Present a summary:
      ```markdown
