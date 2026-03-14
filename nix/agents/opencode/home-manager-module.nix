@@ -9,7 +9,7 @@ in
       type = lib.types.bool;
       default = true;
       description = ''
-        Whether to automatically wire up commands, skills, MCP servers, and settings from autoWire.dir.
+        Whether to automatically wire up commands, skills, agents, MCP servers, and rules from autoWire.dir.
         Set to false if you want to manually configure these.
       '';
     };
@@ -18,7 +18,7 @@ in
       type = lib.types.nullOr lib.types.path;
       default = null;
       description = ''
-        Path to the directory containing commands/, skills/, mcp/, and memory.md.
+        Path to the directory containing commands/, skills/, agents/, mcp/, and memory.md.
         When set, these will be automatically discovered and configured.
       '';
     };
@@ -30,6 +30,7 @@ in
 
     commandsDir = toString autoDir + "/commands";
     skillsDir = toString autoDir + "/skills";
+    agentsDir = toString autoDir + "/agents";
     mcpDir = toString autoDir + "/mcp";
     memoryFile = toString autoDir + "/memory.md";
 
@@ -51,6 +52,15 @@ in
         )
         (lib.filterAttrs (_: type: type == "directory") (builtins.readDir skillsDir)));
 
+    autoAgents = lib.optionalAttrs (autoWireEnabled && builtins.pathExists agentsDir)
+      (lib.mapAttrs'
+        (fileName: _:
+          lib.nameValuePair
+            (lib.removeSuffix ".md" fileName)
+            (agentsDir + "/" + fileName)
+        )
+        (builtins.readDir agentsDir));
+
     autoMcpServers = lib.optionalAttrs (autoWireEnabled && builtins.pathExists mcpDir)
       (lib.mapAttrs'
         (fileName: _:
@@ -71,6 +81,8 @@ in
       commands = lib.mkIf (autoCommands != { }) (lib.mkDefault autoCommands);
 
       skills = lib.mkIf (autoSkills != { }) (lib.mkDefault autoSkills);
+
+      agents = lib.mkIf (autoAgents != { }) (lib.mkDefault autoAgents);
 
       rules = lib.mkIf (autoRules != "") (lib.mkDefault autoRules);
     };
