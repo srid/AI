@@ -57,17 +57,15 @@ Both modules use `autoWire` to discover configuration from a directory:
 │   ├── hack.md       # /hack command
 │   └── pr.md         # /pr command
 ├── skills/           # Skill directories
-│   ├── nix/
-│   │   └── SKILL.md  # Simple skill (markdown only)
-│   └── article-extractor/
-│       ├── SKILL.md  # Skill definition with @placeholder@
-│       └── default.nix  # Optional: builds tool, substitutes @placeholder@
+│   └── nix/
+│       └── SKILL.md  # Skill definition
 ├── agents/           # Agent definitions (.md files)
 │   └── code-reviewer.md
 ├── mcp/              # MCP server configs (.nix files)
 │   ├── chrome-devtools.nix
 │   └── nixos-mcp.nix
-├── settings.nix      # Claude Code settings [Claude Code only]
+├── settings/         # Tool-specific settings
+│   └── claude-code.nix  # Claude Code settings
 └── memory.md         # Persistent memory/context
 ```
 
@@ -75,26 +73,14 @@ Both modules use `autoWire` to discover configuration from a directory:
 
 - **commands/*.md** → Slash commands
 - **agents/*.md** → Custom agents (use `mode: subagent` in frontmatter for OpenCode)
-- **skills/*/SKILL.md** → Skills
+- **skills/*/** → Skills (symlinked)
 - **mcp/*.nix** → MCP server configurations
 - **memory.md** → Global rules
 
 **Claude Code only:**
 
-- **settings.nix** → `programs.claude-code.settings`
-- **skills/*/default.nix** → Placeholder substitution
+- **settings/claude-code.nix** → `programs.claude-code.settings`
 
 **OpenCode only:**
 
 - Uses `programs.mcp.servers` + `enableMcpIntegration` for MCP
-
-### Skill Placeholder Substitution [Claude Code only]
-
-Skills with `default.nix` can use placeholders in `SKILL.md`:
-
-1. Create `skills/myskill/default.nix` that builds a package
-2. In `skills/myskill/SKILL.md`, use `@myskill@` where you need the binary path
-3. The module builds the package and replaces `@myskill@` with `/nix/store/.../bin/myskill`
-
-This lets skill definitions reference Nix-built tools without hardcoding paths.
-

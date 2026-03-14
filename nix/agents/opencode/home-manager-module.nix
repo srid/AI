@@ -2,6 +2,55 @@
 
 let
   cfg = config.programs.opencode;
+
+  autoDir = cfg.autoWire.dir;
+  autoWireEnabled = autoDir != null && cfg.autoWire.enable;
+
+  commandsDir = toString autoDir + "/commands";
+  skillsDir = toString autoDir + "/skills";
+  agentsDir = toString autoDir + "/agents";
+  mcpDir = toString autoDir + "/mcp";
+  memoryFile = toString autoDir + "/memory.md";
+
+  autoCommands = lib.optionalAttrs (autoWireEnabled && builtins.pathExists commandsDir)
+    (lib.mapAttrs'
+      (fileName: _:
+        lib.nameValuePair
+          (lib.removeSuffix ".md" fileName)
+          (builtins.readFile (commandsDir + "/${fileName}"))
+      )
+      (builtins.readDir commandsDir));
+
+  autoSkills = lib.optionalAttrs (autoWireEnabled && builtins.pathExists skillsDir)
+    (lib.mapAttrs'
+      (skillName: _:
+        lib.nameValuePair
+          skillName
+          (skillsDir + "/" + skillName)
+      )
+      (lib.filterAttrs (_: type: type == "directory") (builtins.readDir skillsDir)));
+
+  autoAgents = lib.optionalAttrs (autoWireEnabled && builtins.pathExists agentsDir)
+    (lib.mapAttrs'
+      (fileName: _:
+        lib.nameValuePair
+          (lib.removeSuffix ".md" fileName)
+          (agentsDir + "/" + fileName)
+      )
+      (builtins.readDir agentsDir));
+
+  autoMcpServers = lib.optionalAttrs (autoWireEnabled && builtins.pathExists mcpDir)
+    (lib.mapAttrs'
+      (fileName: _:
+        lib.nameValuePair
+          (lib.removeSuffix ".nix" fileName)
+          (import (mcpDir + "/${fileName}"))
+      )
+      (builtins.readDir mcpDir));
+
+  autoRules = lib.optionalString (autoWireEnabled && builtins.pathExists memoryFile)
+    (builtins.readFile memoryFile);
+
 in
 {
   options.programs.opencode.autoWire = {
@@ -24,56 +73,7 @@ in
     };
   };
 
-  config = let
-    autoDir = cfg.autoWire.dir;
-    autoWireEnabled = autoDir != null && cfg.autoWire.enable;
-
-    commandsDir = toString autoDir + "/commands";
-    skillsDir = toString autoDir + "/skills";
-    agentsDir = toString autoDir + "/agents";
-    mcpDir = toString autoDir + "/mcp";
-    memoryFile = toString autoDir + "/memory.md";
-
-    autoCommands = lib.optionalAttrs (autoWireEnabled && builtins.pathExists commandsDir)
-      (lib.mapAttrs'
-        (fileName: _:
-          lib.nameValuePair
-            (lib.removeSuffix ".md" fileName)
-            (builtins.readFile (commandsDir + "/${fileName}"))
-        )
-        (builtins.readDir commandsDir));
-
-    autoSkills = lib.optionalAttrs (autoWireEnabled && builtins.pathExists skillsDir)
-      (lib.mapAttrs'
-        (skillName: _:
-          lib.nameValuePair
-            skillName
-            (skillsDir + "/" + skillName)
-        )
-        (lib.filterAttrs (_: type: type == "directory") (builtins.readDir skillsDir)));
-
-    autoAgents = lib.optionalAttrs (autoWireEnabled && builtins.pathExists agentsDir)
-      (lib.mapAttrs'
-        (fileName: _:
-          lib.nameValuePair
-            (lib.removeSuffix ".md" fileName)
-            (agentsDir + "/" + fileName)
-        )
-        (builtins.readDir agentsDir));
-
-    autoMcpServers = lib.optionalAttrs (autoWireEnabled && builtins.pathExists mcpDir)
-      (lib.mapAttrs'
-        (fileName: _:
-          lib.nameValuePair
-            (lib.removeSuffix ".nix" fileName)
-            (import (mcpDir + "/${fileName}"))
-        )
-        (builtins.readDir mcpDir));
-
-    autoRules = lib.optionalString (autoWireEnabled && builtins.pathExists memoryFile)
-      (builtins.readFile memoryFile);
-
-  in lib.mkIf autoWireEnabled {
+  config = lib.mkIf autoWireEnabled {
     programs.opencode = {
       enable = lib.mkDefault true;
       enableMcpIntegration = lib.mkDefault true;
