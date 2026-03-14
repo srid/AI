@@ -62,7 +62,9 @@ Both modules use `autoWire` to discover configuration from a directory:
 │   └── article-extractor/
 │       ├── SKILL.md  # Skill definition with @placeholder@
 │       └── default.nix  # Optional: builds tool, substitutes @placeholder@
-├── subagents/        # Subagent definitions (.md files) [Claude Code only]
+├── agents/           # Agent definitions (.md files) [OpenCode]
+│   └── code-reviewer.md
+├── subagents/        # Subagent definitions (.md files) [Claude Code]
 │   └── pre-commit.md
 ├── mcp/              # MCP server configs (.nix files)
 │   ├── chrome-devtools.nix
@@ -74,7 +76,7 @@ Both modules use `autoWire` to discover configuration from a directory:
 **Claude Code autoWire:**
 
 - **commands/*.md** → Slash commands
-- **subagents/*.md** → Custom subagents for Task tool
+- **subagents/*.md** → Custom subagents
 - **skills/*/SKILL.md** → Skills (with optional `default.nix` for placeholder substitution)
 - **mcp/*.nix** → MCP server configurations
 - **settings.nix** → Applied to `programs.claude-code.settings`
@@ -83,8 +85,9 @@ Both modules use `autoWire` to discover configuration from a directory:
 **OpenCode autoWire:**
 
 - **commands/*.md** → Slash commands
+- **agents/*.md** → Custom agents
 - **skills/** → Skill directories (symlinked)
-- **mcp/*.nix** → MCP server configurations (transformed to opencode format)
+- **mcp/*.nix** → MCP server configurations (via `programs.mcp.servers` + `enableMcpIntegration`)
 - **memory.md** → Applied to `programs.opencode.rules`
 
 ### Skill Placeholder Substitution [Claude Code only]
