@@ -69,6 +69,60 @@
 
             # Verify MCP servers are in config (home-manager uses 'mcp' key)
             machine.succeed("grep -q '\"mcp\"' /home/testuser/.config/opencode/opencode.json")
+
+            # Verify auto-wired chrome-devtools is present
+            machine.succeed("grep -q 'chrome-devtools' /home/testuser/.config/opencode/opencode.json")
+          '';
+        };
+
+        opencode-mcp-merge-test = pkgs.testers.runNixOSTest {
+          name = "opencode-mcp-merge";
+
+          nodes.machine = { config, pkgs, ... }: {
+            imports = [
+              home-manager.nixosModules.home-manager
+            ];
+
+            users.users.testuser = {
+              isNormalUser = true;
+              uid = 1000;
+            };
+
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.testuser = {
+                imports = [ opencode-module ];
+
+                home = {
+                  username = "testuser";
+                  homeDirectory = "/home/testuser";
+                  stateVersion = "24.11";
+                };
+
+                programs.opencode = {
+                  autoWire.dir = configDir;
+                };
+
+                programs.mcp.servers.existing-server = {
+                  url = "https://example.com/mcp";
+                };
+              };
+            };
+
+            system.stateVersion = "24.11";
+          };
+
+          testScript = ''
+            machine.start()
+            machine.wait_for_unit("home-manager-testuser.service")
+
+            # Verify opencode.json exists
+            machine.succeed("test -f /home/testuser/.config/opencode/opencode.json")
+
+            # Verify both auto-wired and user-defined MCP servers are present (merge)
+            machine.succeed("grep -q 'chrome-devtools' /home/testuser/.config/opencode/opencode.json")
+            machine.succeed("grep -q 'existing-server' /home/testuser/.config/opencode/opencode.json")
           '';
         };
       };

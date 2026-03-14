@@ -51,7 +51,7 @@ in
         )
         (lib.filterAttrs (_: type: type == "directory") (builtins.readDir skillsDir)));
 
-    rawMcpServers = lib.optionalAttrs (autoWireEnabled && builtins.pathExists mcpDir)
+    autoMcpServers = lib.optionalAttrs (autoWireEnabled && builtins.pathExists mcpDir)
       (lib.mapAttrs'
         (fileName: _:
           lib.nameValuePair
@@ -60,37 +60,24 @@ in
         )
         (builtins.readDir mcpDir));
 
-    transformMcpServer = name: server: {
-      enabled = !(server.disabled or false);
-    } // (
-      if server ? url then
-        { type = "remote"; url = server.url; }
-        // (lib.optionalAttrs (server ? headers) { headers = server.headers; })
-      else if server ? command then
-        { type = "local"; command = [ server.command ] ++ (server.args or [ ]); }
-        // (lib.optionalAttrs (server ? env) { environment = server.env; })
-      else
-        { }
-    );
-
-    autoMcpServers = lib.mapAttrs transformMcpServer rawMcpServers;
-
     autoRules = lib.optionalString (autoWireEnabled && builtins.pathExists memoryFile)
       (builtins.readFile memoryFile);
 
   in lib.mkIf autoWireEnabled {
     programs.opencode = {
       enable = lib.mkDefault true;
+      enableMcpIntegration = lib.mkDefault true;
 
       commands = lib.mkIf (autoCommands != { }) (lib.mkDefault autoCommands);
 
       skills = lib.mkIf (autoSkills != { }) (lib.mkDefault autoSkills);
 
       rules = lib.mkIf (autoRules != "") (lib.mkDefault autoRules);
+    };
 
-      settings = lib.mkIf (autoMcpServers != { }) {
-        mcp = lib.mkDefault autoMcpServers;
-      };
+    programs.mcp = {
+      enable = lib.mkDefault true;
+      servers = autoMcpServers;
     };
   };
 }
