@@ -1,6 +1,6 @@
 ---
 name: nix
-description: Expert Nix development assistance. Use when working with Nix code, .nix files, flakes, NixOS configuration, or when user mentions Nix, flake-parts, nixpkgs.
+description: Nix with flake-parts, nixpkgs-fmt, and home-manager module conventions. Use when working with .nix files, flakes, or NixOS configuration.
 ---
 
 # Nix Development

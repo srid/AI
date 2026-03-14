@@ -1,6 +1,6 @@
 ---
 name: haskell
-description: Expert Haskell development assistance. Use when working with Haskell code, .hs files, Cabal, ghcid, or when user mentions Haskell, functional programming, or type-level programming.
+description: Haskell coding with relude, ghcid-based workflow, hlint compliance, and strict error handling. Use when working with .hs files, Cabal projects, or ghcid.
 ---
 
 # Haskell Development

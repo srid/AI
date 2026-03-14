@@ -1,3 +1,8 @@
+---
+name: technical-writer
+description: Direct, no-nonsense technical writing. Use for blog posts, documentation, and READMEs. Eliminates AI-speak, hedging, and filler.
+---
+
 # Technical Writing Style Guide
 
 ## Core Principles
