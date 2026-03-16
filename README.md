@@ -26,9 +26,13 @@ Add to your home-manager config:
   inputs.nix-agent-wire.url = "github:srid/nix-agent-wire";
 
   outputs = { inputs, ... }: {
-    homeModules.default = { ... }: {
-      imports = [ inputs.nix-agent-wire.homeModules.opencode ];
-      programs.opencode.autoWire.dir = ./my-agent-config;
+    homeConfigurations.myuser = inputs.home-manager.lib.homeManagerConfiguration {
+      modules = [
+        inputs.nix-agent-wire.homeModules.opencode
+        {
+          programs.opencode.autoWire.dirs = [ ./my-agent-config ];
+        }
+      ];
     };
   };
 }
@@ -60,6 +64,7 @@ your-config/
 ## Examples
 
 - [srid/nixos-config](https://github.com/srid/nixos-config) - Real-world NixOS configuration using nix-agent-wire
+- [juspay/skills](https://github.com/juspay/skills) - Collection of reusable skills for LLM coding agents
 - `example/` in this repo - Minimal template showing all file types
 
 ## CI
