@@ -7,11 +7,11 @@
     },
     "skills": {
       "locked": {
-        "lastModified": 1773527053,
-        "narHash": "sha256-miI9LxY/yMka249ARA4dKOK18hmkqqjbKiW2HRSjI5U=",
+        "lastModified": 1773689660,
+        "narHash": "sha256-irGBt9iyjGMa4rgRxnN0UUFYGNGUvWH6DK2hGk+JLpY=",
         "owner": "juspay",
         "repo": "skills",
-        "rev": "ae719f61b984cfb573a751cc73b2dc7599e510cc",
+        "rev": "765c76941e08b497f0b0472aa9d91cae811df4bc",
         "type": "github"
       },
       "original": {
