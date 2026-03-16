@@ -1,4 +1,4 @@
-# Srid's AI Code Agent Configuration
+# AI Code Agent Nix Configuration
 
 This repo provides home-manager modules for auto-wiring AI code agent configurations:
 
@@ -27,7 +27,7 @@ Add as flake input:
 
   programs.claude-code = {
     enable = true;
-    autoWire.dir = AI;
+    autoWire.dir = /path/to/your/config;  # Your config directory
   };
 }
 ```
@@ -42,31 +42,29 @@ Add as flake input:
 
   programs.opencode = {
     enable = true;
-    autoWire.dir = AI;
+    autoWire.dir = /path/to/your/config;  # Your config directory
   };
 }
 ```
 
 ## Directory Layout
 
-Both modules use `autoWire` to discover configuration from a directory:
+Both modules use `autoWire` to discover configuration from a directory. See `example/` for a minimal template:
 
 ```
-.
-├── commands/         # Slash commands (.md files)
-│   ├── hack.md       # /hack command
-│   └── pr.md         # /pr command
-├── skills/           # Local skill directories
-│   └── haskell/
-│       └── SKILL.md  # Skill definition
-├── agents/           # Agent definitions (.md files)
-│   └── code-reviewer.md
-├── mcp/              # MCP server configs (.nix files)
-│   ├── chrome-devtools.nix
-│   └── nixos-mcp.nix
-├── settings/         # Tool-specific settings
-│   └── claude-code.nix  # Claude Code settings
-└── memory.md         # Persistent memory/context
+example/
+├── agents/              # Agent definitions (.md files)
+│   └── example.md
+├── commands/            # Slash commands (.md files)
+│   └── example.md
+├── skills/              # Local skill directories
+│   └── example/
+│       └── SKILL.md
+├── mcp/                 # MCP server configs (.nix files)
+│   └── example.nix
+├── settings/            # Tool-specific settings
+│   └── claude-code.nix
+└── memory.md            # Persistent memory/context
 ```
 
 **External Skills:**

@@ -8,15 +8,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     skills.url = "github:juspay/skills";
-    example.url = "path:./../../../../example";
   };
 
-  outputs = { self, nixpkgs, home-manager, skills, example }:
+  outputs = { self, nixpkgs, home-manager, skills }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       opencode-module = import ../home-manager-module.nix;
-      configDir = example;
+      configDir = builtins.path { path = ./../../../../example; name = "opencode-config"; };
     in
     {
       checks.${system} = {

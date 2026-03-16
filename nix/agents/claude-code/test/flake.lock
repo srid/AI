@@ -1,16 +1,5 @@
 {
   "nodes": {
-    "example": {
-      "locked": {
-        "path": "./../../../../example",
-        "type": "path"
-      },
-      "original": {
-        "path": "./../../../../example",
-        "type": "path"
-      },
-      "parent": []
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -49,7 +38,6 @@
     },
     "root": {
       "inputs": {
-        "example": "example",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
         "skills": "skills"
