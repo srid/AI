@@ -3,15 +3,15 @@ description: Stage, commit, and push changes
 subtask: true
 ---
 
-# CI Command
+# GCI Command
 
 Stage all changes, generate a commit message, commit, and push after user approval.
 
 ## Usage
 
 ```
-/ci           # Normal mode - prompts for approval, then commits and pushes
-/ci yes       # Auto mode - commits and pushes without prompting
+/gci           # Normal mode - prompts for approval, then commits and pushes
+/gci yes       # Auto mode - commits and pushes without prompting
 ```
 
 ## Workflow
@@ -59,7 +59,7 @@ Stage all changes, generate a commit message, commit, and push after user approv
 
 ## Example Output Format
 
-### Normal Mode (`/ci`)
+### Normal Mode (`/gci`)
 ```markdown
 Staged changes:
 M  src/app.ts
@@ -75,7 +75,7 @@ for data validation. Updates app.ts to use the new utilities.
 [Uses question tool with options: Commit, Edit message, Cancel]
 ```
 
-### Auto Mode (`/ci yes`)
+### Auto Mode (`/gci yes`)
 ```markdown
 Staged changes:
 M  src/app.ts
