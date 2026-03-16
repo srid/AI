@@ -17,67 +17,66 @@
         config.allowUnfree = true;
       };
       claude-code-module = import ../home-manager-module.nix;
-      configDir = builtins.path { path = ./../../../../example; name = "claude-code-config"; };
+      configDir = builtins.path { path = ./../../../../example/1; name = "claude-code-config"; };
+      configDir2 = builtins.path { path = ./../../../../example/2; name = "claude-code-config2"; };
     in
     {
-      checks.${system} = {
-        claude-code-home-manager-test = pkgs.testers.runNixOSTest {
-          name = "claude-code-home-manager-module";
+      checks.${system}.claude-code-test = pkgs.testers.runNixOSTest {
+        name = "claude-code-home-manager-module";
 
-          nodes.machine = { config, pkgs, ... }: {
-            imports = [
-              home-manager.nixosModules.home-manager
-            ];
+        nodes.machine = { config, pkgs, ... }: {
+          imports = [
+            home-manager.nixosModules.home-manager
+          ];
 
-            users.users.testuser = {
-              isNormalUser = true;
-              uid = 1000;
-            };
-
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.testuser = {
-                imports = [
-                  claude-code-module
-                ];
-
-                home = {
-                  username = "testuser";
-                  homeDirectory = "/home/testuser";
-                  stateVersion = "24.11";
-                };
-
-                programs.claude-code = {
-                  autoWire.dir = configDir;
-                };
-              };
-            };
-
-            system.stateVersion = "24.11";
+          users.users.testuser = {
+            isNormalUser = true;
+            uid = 1000;
           };
 
-          testScript = ''
-            machine.start()
-            machine.wait_for_unit("home-manager-testuser.service")
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.testuser = {
+              imports = [
+                claude-code-module
+              ];
 
-            # Verify skills are auto-wired
-            machine.succeed("test -d /home/testuser/.claude/skills")
+              home = {
+                username = "testuser";
+                homeDirectory = "/home/testuser";
+                stateVersion = "24.11";
+              };
 
-            # Local skill from example/
-            machine.succeed("test -d /home/testuser/.claude/skills/example")
+              programs.claude-code = {
+                autoWire.dirs = [ configDir configDir2 ];
+              };
+            };
+          };
 
-            # Verify agent is auto-wired
-            machine.succeed("test -f /home/testuser/.claude/agents/example.md")
-
-            # Verify command is auto-wired
-            machine.succeed("test -f /home/testuser/.claude/commands/example.md")
-
-            # Verify settings.json exists and has expected content
-            machine.succeed("test -f /home/testuser/.claude/settings.json")
-            machine.succeed("grep -q 'bypassPermissions' /home/testuser/.claude/settings.json")
-          '';
+          system.stateVersion = "24.11";
         };
+
+        testScript = ''
+          machine.start()
+          machine.wait_for_unit("home-manager-testuser.service")
+
+          # Verify skills from both dirs
+          machine.succeed("test -d /home/testuser/.claude/skills/example")
+          machine.succeed("test -d /home/testuser/.claude/skills/second-skill")
+
+          # Verify agents from both dirs
+          machine.succeed("test -f /home/testuser/.claude/agents/example.md")
+          machine.succeed("test -f /home/testuser/.claude/agents/second.md")
+
+          # Verify commands from both dirs
+          machine.succeed("test -f /home/testuser/.claude/commands/example.md")
+          machine.succeed("test -f /home/testuser/.claude/commands/second.md")
+
+          # Verify settings.json exists and has expected content
+          machine.succeed("test -f /home/testuser/.claude/settings.json")
+          machine.succeed("grep -q 'bypassPermissions' /home/testuser/.claude/settings.json")
+        '';
       };
     };
 }

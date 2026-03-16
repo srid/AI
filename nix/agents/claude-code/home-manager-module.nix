@@ -3,57 +3,69 @@
 let
   cfg = config.programs.claude-code;
 
-  autoDir = cfg.autoWire.dir;
-  autoWireEnabled = autoDir != null && cfg.autoWire.enable;
+  autoDirs = cfg.autoWire.dirs;
+  autoWireEnabled = autoDirs != [ ] && cfg.autoWire.enable;
 
-  agentsDir = toString autoDir + "/agents";
-  commandsDir = toString autoDir + "/commands";
-  skillsDir = toString autoDir + "/skills";
-  mcpDir = toString autoDir + "/mcp";
-  settingsFile = toString autoDir + "/settings/claude-code.nix";
-  memoryFile = toString autoDir + "/memory.md";
+  readAgents = dir:
+    let path = toString dir + "/agents";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (lib.mapAttrs'
+        (fileName: _:
+          lib.nameValuePair
+            (lib.removeSuffix ".md" fileName)
+            (builtins.readFile (path + "/${fileName}"))
+        )
+        (builtins.readDir path));
 
-  autoAgents = lib.optionalAttrs (autoWireEnabled && builtins.pathExists agentsDir)
-    (lib.mapAttrs'
-      (fileName: _:
-        lib.nameValuePair
-          (lib.removeSuffix ".md" fileName)
-          (builtins.readFile (agentsDir + "/${fileName}"))
-      )
-      (builtins.readDir agentsDir));
+  readCommands = dir:
+    let path = toString dir + "/commands";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (lib.mapAttrs'
+        (fileName: _:
+          lib.nameValuePair
+            (lib.removeSuffix ".md" fileName)
+            (builtins.readFile (path + "/${fileName}"))
+        )
+        (builtins.readDir path));
 
-  autoCommands = lib.optionalAttrs (autoWireEnabled && builtins.pathExists commandsDir)
-    (lib.mapAttrs'
-      (fileName: _:
-        lib.nameValuePair
-          (lib.removeSuffix ".md" fileName)
-          (builtins.readFile (commandsDir + "/${fileName}"))
-      )
-      (builtins.readDir commandsDir));
+  readSkills = dir:
+    let path = toString dir + "/skills";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (lib.mapAttrs'
+        (skillName: _:
+          lib.nameValuePair
+            skillName
+            (path + "/" + skillName)
+        )
+        (lib.filterAttrs (_: type: type == "directory") (builtins.readDir path)));
 
-  autoSkills = lib.optionalAttrs (autoWireEnabled && builtins.pathExists skillsDir)
-    (lib.mapAttrs'
-      (skillName: _:
-        lib.nameValuePair
-          skillName
-          (skillsDir + "/" + skillName)
-      )
-      (lib.filterAttrs (_: type: type == "directory") (builtins.readDir skillsDir)));
+  readMcpServers = dir:
+    let path = toString dir + "/mcp";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (lib.mapAttrs'
+        (fileName: _:
+          lib.nameValuePair
+            (lib.removeSuffix ".nix" fileName)
+            (import (path + "/${fileName}"))
+        )
+        (builtins.readDir path));
 
-  autoMcpServers = lib.optionalAttrs (autoWireEnabled && builtins.pathExists mcpDir)
-    (lib.mapAttrs'
-      (fileName: _:
-        lib.nameValuePair
-          (lib.removeSuffix ".nix" fileName)
-          (import (mcpDir + "/${fileName}"))
-      )
-      (builtins.readDir mcpDir));
+  readSettings = dir:
+    let path = toString dir + "/settings/claude-code.nix";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (import path);
 
-  autoSettings = lib.optionalAttrs (autoWireEnabled && builtins.pathExists settingsFile)
-    (import settingsFile);
+  readMemory = dir:
+    let path = toString dir + "/memory.md";
+    in lib.optionalAttrs (builtins.pathExists path)
+      { text = builtins.readFile path; };
 
-  autoMemory = lib.optionalAttrs (autoWireEnabled && builtins.pathExists memoryFile)
-    { text = builtins.readFile memoryFile; };
+  autoAgents = lib.foldl' lib.mergeAttrs { } (map readAgents autoDirs);
+  autoCommands = lib.foldl' lib.mergeAttrs { } (map readCommands autoDirs);
+  autoSkills = lib.foldl' lib.mergeAttrs { } (map readSkills autoDirs);
+  autoMcpServers = lib.foldl' lib.mergeAttrs { } (map readMcpServers autoDirs);
+  autoSettings = lib.foldl' lib.mergeAttrs { } (map readSettings autoDirs);
+  autoMemory = lib.foldl' lib.mergeAttrs { } (map readMemory autoDirs);
 
 in
 {
@@ -63,17 +75,17 @@ in
         type = lib.types.bool;
         default = true;
         description = ''
-          Whether to automatically wire up agents, commands, skills, and MCP servers from autoWire.dir.
+          Whether to automatically wire up agents, commands, skills, and MCP servers from autoWire.dirs.
           Set to false if you want to manually configure these.
         '';
       };
 
-      dir = lib.mkOption {
-        type = lib.types.nullOr lib.types.path;
-        default = null;
+      dirs = lib.mkOption {
+        type = lib.types.listOf lib.types.path;
+        default = [ ];
         description = ''
-          Path to the claude-code directory containing agents/, commands/, skills/, mcp/, settings/claude-code.nix, and memory.md.
-          When set, these will be automatically discovered and configured.
+          List of directories containing agents/, commands/, skills/, mcp/, settings/claude-code.nix, and memory.md.
+          All directories are merged, with later directories taking precedence.
         '';
       };
     };
