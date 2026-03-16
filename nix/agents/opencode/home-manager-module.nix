@@ -3,53 +3,63 @@
 let
   cfg = config.programs.opencode;
 
-  autoDir = cfg.autoWire.dir;
-  autoWireEnabled = autoDir != null && cfg.autoWire.enable;
+  autoDirs = cfg.autoWire.dirs;
+  autoWireEnabled = autoDirs != [ ] && cfg.autoWire.enable;
 
-  commandsDir = toString autoDir + "/commands";
-  skillsDir = toString autoDir + "/skills";
-  agentsDir = toString autoDir + "/agents";
-  mcpDir = toString autoDir + "/mcp";
-  memoryFile = toString autoDir + "/memory.md";
+  readCommands = dir:
+    let path = toString dir + "/commands";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (lib.mapAttrs'
+        (fileName: _:
+          lib.nameValuePair
+            (lib.removeSuffix ".md" fileName)
+            (builtins.readFile (path + "/${fileName}"))
+        )
+        (builtins.readDir path));
 
-  autoCommands = lib.optionalAttrs (autoWireEnabled && builtins.pathExists commandsDir)
-    (lib.mapAttrs'
-      (fileName: _:
-        lib.nameValuePair
-          (lib.removeSuffix ".md" fileName)
-          (builtins.readFile (commandsDir + "/${fileName}"))
-      )
-      (builtins.readDir commandsDir));
+  readSkills = dir:
+    let path = toString dir + "/skills";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (lib.mapAttrs'
+        (skillName: _:
+          lib.nameValuePair
+            skillName
+            (path + "/" + skillName)
+        )
+        (lib.filterAttrs (_: type: type == "directory") (builtins.readDir path)));
 
-  autoSkills = lib.optionalAttrs (autoWireEnabled && builtins.pathExists skillsDir)
-    (lib.mapAttrs'
-      (skillName: _:
-        lib.nameValuePair
-          skillName
-          (skillsDir + "/" + skillName)
-      )
-      (lib.filterAttrs (_: type: type == "directory") (builtins.readDir skillsDir)));
+  readAgents = dir:
+    let path = toString dir + "/agents";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (lib.mapAttrs'
+        (fileName: _:
+          lib.nameValuePair
+            (lib.removeSuffix ".md" fileName)
+            (path + "/" + fileName)
+        )
+        (builtins.readDir path));
 
-  autoAgents = lib.optionalAttrs (autoWireEnabled && builtins.pathExists agentsDir)
-    (lib.mapAttrs'
-      (fileName: _:
-        lib.nameValuePair
-          (lib.removeSuffix ".md" fileName)
-          (agentsDir + "/" + fileName)
-      )
-      (builtins.readDir agentsDir));
+  readMcpServers = dir:
+    let path = toString dir + "/mcp";
+    in lib.optionalAttrs (builtins.pathExists path)
+      (lib.mapAttrs'
+        (fileName: _:
+          lib.nameValuePair
+            (lib.removeSuffix ".nix" fileName)
+            (import (path + "/${fileName}"))
+        )
+        (builtins.readDir path));
 
-  autoMcpServers = lib.optionalAttrs (autoWireEnabled && builtins.pathExists mcpDir)
-    (lib.mapAttrs'
-      (fileName: _:
-        lib.nameValuePair
-          (lib.removeSuffix ".nix" fileName)
-          (import (mcpDir + "/${fileName}"))
-      )
-      (builtins.readDir mcpDir));
+  readRules = dir:
+    let path = toString dir + "/memory.md";
+    in lib.optionalString (builtins.pathExists path)
+      (builtins.readFile path);
 
-  autoRules = lib.optionalString (autoWireEnabled && builtins.pathExists memoryFile)
-    (builtins.readFile memoryFile);
+  autoCommands = lib.foldl' lib.mergeAttrs { } (map readCommands autoDirs);
+  autoSkills = lib.foldl' lib.mergeAttrs { } (map readSkills autoDirs);
+  autoAgents = lib.foldl' lib.mergeAttrs { } (map readAgents autoDirs);
+  autoMcpServers = lib.foldl' lib.mergeAttrs { } (map readMcpServers autoDirs);
+  autoRules = lib.concatStringsSep "\n\n" (lib.filter (s: s != "") (map readRules autoDirs));
 
 in
 {
@@ -58,17 +68,17 @@ in
       type = lib.types.bool;
       default = true;
       description = ''
-        Whether to automatically wire up commands, skills, agents, MCP servers, and rules from autoWire.dir.
+        Whether to automatically wire up commands, skills, agents, MCP servers, and rules from autoWire.dirs.
         Set to false if you want to manually configure these.
       '';
     };
 
-    dir = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
+    dirs = lib.mkOption {
+      type = lib.types.listOf lib.types.path;
+      default = [ ];
       description = ''
-        Path to the directory containing commands/, skills/, agents/, mcp/, and memory.md.
-        When set, these will be automatically discovered and configured.
+        List of directories containing commands/, skills/, agents/, mcp/, and memory.md.
+        All directories are merged, with later directories taking precedence.
       '';
     };
   };
