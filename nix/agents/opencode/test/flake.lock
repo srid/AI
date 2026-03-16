@@ -1,5 +1,16 @@
 {
   "nodes": {
+    "example": {
+      "locked": {
+        "path": "./../../../../example",
+        "type": "path"
+      },
+      "original": {
+        "path": "./../../../../example",
+        "type": "path"
+      },
+      "parent": []
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -38,8 +49,25 @@
     },
     "root": {
       "inputs": {
+        "example": "example",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "skills": "skills"
+      }
+    },
+    "skills": {
+      "locked": {
+        "lastModified": 1773689660,
+        "narHash": "sha256-irGBt9iyjGMa4rgRxnN0UUFYGNGUvWH6DK2hGk+JLpY=",
+        "owner": "juspay",
+        "repo": "skills",
+        "rev": "765c76941e08b497f0b0472aa9d91cae811df4bc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "juspay",
+        "repo": "skills",
+        "type": "github"
       }
     }
   },
